@@ -1,23 +1,48 @@
 # Iris
 
-**Iris** is a demo long-form magazine site (tagline: *ideas in bloom*), built as an original reconstruction exercise with its own branding, logo, and essays.
+**Iris** is a demo long-form magazine site (tagline: *ideas in bloom*), with a small editorial CMS backend similar to what a publication like Aeon would run internally.
 
-Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui.
+Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, SQLite (`better-sqlite3` + Drizzle-style schema).
 
 ## Run locally
 
 ```bash
 npm install
+cp .env.example .env.local   # optional; dev session secret has a fallback
+npm run db:seed              # creates ./data/iris.sqlite + default admin + essays
 npm run dev -- --port 43123
 ```
 
-Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
+- Public site: [http://127.0.0.1:43123](http://127.0.0.1:43123)
+- Admin CMS: [http://127.0.0.1:43123/admin/login](http://127.0.0.1:43123/admin/login)
 
-## Structure
+### Default admin (first seed only)
 
-- `app/` — routes (home, section hubs, essays, about)
-- `lib/articles.ts` — mock editorial content
-- `public/iris-logo-mark.jpg` — Iris logomark
-- `public/iris-logo.svg` — favicon / vector mark
+| Field | Value |
+|--------|--------|
+| Email | `editor@iris.local` |
+| Password | `iris-editor` |
 
-Newsletter signup is a client-side demo only; no email is sent.
+Override before the first seed with `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_NAME` in `.env.local`.
+
+## CMS features
+
+- Session-based admin login (httpOnly cookie via `iron-session`)
+- CRUD for essays (draft / published)
+- Homepage “featured” flag
+- Public pages read from SQLite; publishing revalidates the site
+
+## Project layout
+
+- `app/(site)/` — public magazine routes
+- `app/admin/` — CMS UI + protected layouts
+- `app/api/` — auth + admin JSON API
+- `lib/db/` — SQLite client, schema, seed
+- `lib/data/` — article queries and mutations
+- `data/iris.sqlite` — local database (gitignored)
+
+Newsletter signup on the public site is a client-side demo only; no email is sent.
+
+## Production notes
+
+Set `SESSION_SECRET` to at least 32 random characters. Change the admin password after first login (re-seed or update the DB). Use a persistent volume for `DATABASE_PATH` if you deploy the app.

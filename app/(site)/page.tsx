@@ -2,10 +2,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { articles, getFeaturedArticle, sectionColors, sections } from "@/lib/articles";
+import { sectionColors, sections } from "@/lib/articles";
+import { getFeaturedArticle, listPublishedArticles } from "@/lib/data/articles";
 
-export default function Home() {
-  const featured = getFeaturedArticle();
+export default async function Home() {
+  const articles = await listPublishedArticles();
+  const featured = (await getFeaturedArticle()) ?? articles[0];
+
+  if (!featured) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+        <h1 className="font-serif text-4xl text-foreground">Iris</h1>
+        <p className="mt-4 text-muted-foreground">No published essays yet. Sign in to the CMS to add content.</p>
+        <Link href="/admin/login" className="mt-6 inline-block text-sm hover:underline">
+          Admin sign in →
+        </Link>
+      </main>
+    );
+  }
+
   const leadColumn = articles.filter((a) => a.slug !== featured.slug).slice(0, 2);
   const gridArticles = articles.filter((a) => a.slug !== featured.slug).slice(2);
 

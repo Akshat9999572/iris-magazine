@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
-import {
-  getArticlesBySection,
-  sectionColors,
-  sections,
-  type Section,
-} from "@/lib/articles";
+import { sectionColors, sections, type Section } from "@/lib/articles";
+import { getArticlesBySection } from "@/lib/data/articles";
 
 type PageProps = {
   params: Promise<{ section: string }>;
@@ -34,22 +30,15 @@ export default async function SectionPage({ params }: PageProps) {
   if (!isSection(sectionId)) notFound();
 
   const section = sections.find((s) => s.id === sectionId)!;
-  const items = getArticlesBySection(sectionId);
+  const items = await getArticlesBySection(sectionId);
 
   return (
     <main className="mx-auto max-w-[84rem] px-4 py-12 sm:px-8 lg:px-12 lg:py-16">
-      <p
-        style={{ color: sectionColors[sectionId] }}
-        className="font-mono text-xs uppercase tracking-[0.2em]"
-      >
+      <p style={{ color: sectionColors[sectionId] }} className="font-mono text-xs uppercase tracking-[0.2em]">
         Section
       </p>
-      <h1 className="mt-3 font-serif text-5xl font-semibold leading-none text-foreground">
-        {section.label}
-      </h1>
-      <p className="mt-5 max-w-2xl font-serif text-xl leading-snug text-muted-foreground">
-        {section.description}
-      </p>
+      <h1 className="mt-3 font-serif text-5xl font-semibold leading-none text-foreground">{section.label}</h1>
+      <p className="mt-5 max-w-2xl font-serif text-xl leading-snug text-muted-foreground">{section.description}</p>
 
       {items.length === 0 ? (
         <p className="mt-14 text-base text-muted-foreground">Essays coming soon in this section.</p>

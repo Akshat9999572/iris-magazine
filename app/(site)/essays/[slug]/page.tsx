@@ -2,19 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
-import { articles, getArticle, sectionColors } from "@/lib/articles";
+import { sectionColors } from "@/lib/articles";
+import { getPublishedArticle, listPublishedArticles, listPublishedSlugs } from "@/lib/data/articles";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return articles.map((a) => ({ slug: a.slug }));
+  const slugs = await listPublishedSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getPublishedArticle(slug);
   if (!article) return {};
   return {
     title: article.title,
@@ -24,12 +26,11 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function EssayPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getPublishedArticle(slug);
   if (!article) notFound();
 
-  const related = articles
-    .filter((a) => a.section === article.section && a.slug !== article.slug)
-    .slice(0, 2);
+  const all = await listPublishedArticles();
+  const related = all.filter((a) => a.section === article.section && a.slug !== article.slug).slice(0, 2);
 
   return (
     <main className="pb-20">
@@ -47,13 +48,8 @@ export default async function EssayPage({ params }: PageProps) {
           </h1>
           <p className="mt-6 font-serif text-xl leading-snug text-foreground/80">{article.dek}</p>
           <p className="mt-6 text-base text-muted-foreground">
-            <span className="text-foreground">{article.author}</span> · {article.readMinutes} min
-            read ·{" "}
-            {new Date(article.publishedAt).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            <span className="text-foreground">{article.author}</span> · {article.readMinutes} min read ·{" "}
+            {article.publishedAt}
           </p>
         </header>
 
