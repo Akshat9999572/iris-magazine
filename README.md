@@ -13,8 +13,7 @@ npm run db:seed              # optional locally; production seeds on first reque
 npm run dev -- --port 43123
 ```
 
-Requires **Node.js ≥ 22.13** (see `.nvmrc`).
-```
+Requires **Node.js ≥ 20** (Hostinger default 20.20.2 is supported).
 
 - Public site: [http://127.0.0.1:43123](http://127.0.0.1:43123)
 - Admin CMS: [http://127.0.0.1:43123/admin/login](http://127.0.0.1:43123/admin/login)
