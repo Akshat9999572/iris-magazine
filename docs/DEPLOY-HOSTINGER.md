@@ -27,10 +27,12 @@ Use that value for `SESSION_SECRET` in hPanel.
 
 | Setting | Value |
 |--------|--------|
-| Node.js version | **22** (or 24) |
+| Node.js version | **22** or **24** — **not 20**. This repo requires **Node ≥ 22.13** (`better-sqlite3`, `iron-session`, `cn`). |
 | Build command | `build` |
 | Output directory | `.next` |
 | Start | (Hostinger runs the standalone Next server automatically) |
+
+> If the build log shows `EBADENGINE` for Node 20.x, open **Deploy settings** and change **Node.js version** to **22**, then redeploy. A failed `prebuild` / `db:seed` step is no longer used; the database is created on first request at runtime.
 
 4. **Environment variables** (required):
 
@@ -61,7 +63,8 @@ Optional:
 
 - `next.config.ts` exports a **plain object** (required by Hostinger’s standalone merge).
 - `output: "standalone"` is set for VPS/manual deploys; Hostinger also enforces standalone for `next` apps.
-- `prebuild` runs `db:seed` during CI/build; **runtime** also seeds on first request if the DB is empty.
+- **No `prebuild` seed** — do not add `npm run db:seed` before `next build`. Seeding runs automatically on first app request when the DB is empty (`lib/db/seed.ts`).
+- `.npmrc` sets `engine-strict=true` so installs fail fast on Node 20 instead of breaking on native modules.
 
 ## VPS (manual)
 
@@ -89,7 +92,8 @@ Use **PM2** + **Nginx** reverse proxy + HTTPS (see Hostinger’s Node VPS tutori
 
 | Symptom | Fix |
 |--------|-----|
-| Build fails on `better-sqlite3` | Use Node 22 on Hostinger; ensure build runs on Linux (not cross-compile). |
+| Build fails on `better-sqlite3` / `EBADENGINE` | Set Node.js **22** (≥ 22.13) in hPanel deploy settings and redeploy. |
+| Old log mentions `prebuild` / `db:seed` | Pull latest `main` — prebuild was removed. |
 | Admin login always fails | Set `SESSION_SECRET` in hPanel and redeploy; check email/password match seed env. |
 | Empty public site | Publish articles in CMS or confirm seed ran (visit `/admin` after login). |
 | “SESSION_SECRET must be set…” | Add `SESSION_SECRET` (32+ chars) in Environment variables and redeploy. |

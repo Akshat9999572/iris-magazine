@@ -19,6 +19,12 @@ if git remote get-url github >/dev/null 2>&1; then
   git remote remove github
 fi
 
-gh repo create "$REPO_NAME" --"$VISIBILITY" --source=. --remote=github --push --description "Iris magazine — Next.js editorial site with admin CMS"
+if [ "$VISIBILITY" = "private" ]; then
+  gh repo create "$REPO_NAME" --private --source=. --remote=github --push \
+    --description "Iris magazine — Next.js editorial site with admin CMS"
+else
+  gh repo create "$REPO_NAME" --public --source=. --remote=github --push \
+    --description "Iris magazine — Next.js editorial site with admin CMS"
+fi
 
 echo "Done. Repository: $(gh repo view "$REPO_NAME" --json url -q .url)"

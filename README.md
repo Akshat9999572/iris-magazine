@@ -9,8 +9,11 @@ Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, SQLite (`be
 ```bash
 npm install
 cp .env.example .env.local   # optional; dev session secret has a fallback
-npm run db:seed              # creates ./data/iris.sqlite + default admin + essays
+npm run db:seed              # optional locally; production seeds on first request
 npm run dev -- --port 43123
+```
+
+Requires **Node.js ≥ 22.13** (see `.nvmrc`).
 ```
 
 - Public site: [http://127.0.0.1:43123](http://127.0.0.1:43123)
