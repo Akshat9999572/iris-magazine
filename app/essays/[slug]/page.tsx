@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
-import { articles, getArticle } from "@/lib/articles";
+import { articles, getArticle, sectionColors } from "@/lib/articles";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -32,59 +32,62 @@ export default async function EssayPage({ params }: PageProps) {
     .slice(0, 2);
 
   return (
-    <main className="pb-16">
+    <main className="pb-20">
       <article>
-        <div className="border-b border-border bg-muted/20">
-          <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
-            <Link
-              href={`/${article.section}`}
-              className="text-xs font-medium uppercase tracking-[0.25em] text-iris hover:underline"
-            >
-              {article.section}
-            </Link>
-            <h1 className="mt-4 font-heading text-3xl leading-tight text-foreground sm:text-4xl lg:text-5xl">
-              {article.title}
-            </h1>
-            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">{article.dek}</p>
-            <p className="mt-6 text-sm text-muted-foreground">
-              By <span className="font-medium text-foreground">{article.author}</span> ·{" "}
-              {article.readMinutes} min read ·{" "}
-              {new Date(article.publishedAt).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </p>
-          </div>
-          <div className="relative mx-auto aspect-[2/1] max-w-5xl overflow-hidden rounded-t-xl px-4 sm:px-6">
-            <div className="relative h-full w-full overflow-hidden rounded-t-xl bg-muted">
-              <Image
-                src={article.image.src}
-                alt={article.image.alt}
-                fill
-                className="object-cover"
-                priority
-                sizes="100vw"
-              />
-            </div>
+        <header className="mx-auto max-w-[46rem] px-4 pt-12 sm:px-8 lg:pt-16">
+          <Link
+            href={`/${article.section}`}
+            style={{ color: sectionColors[article.section] }}
+            className="font-mono text-xs uppercase tracking-[0.2em] hover:underline"
+          >
+            {article.section}
+          </Link>
+          <h1 className="mt-5 font-serif text-[2rem] font-semibold leading-[1.08] font-synthesis-auto text-foreground sm:text-5xl lg:text-[3.25rem]">
+            {article.title}
+          </h1>
+          <p className="mt-6 font-serif text-xl leading-snug text-foreground/80">{article.dek}</p>
+          <p className="mt-6 text-base text-muted-foreground">
+            <span className="text-foreground">{article.author}</span> · {article.readMinutes} min
+            read ·{" "}
+            {new Date(article.publishedAt).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+        </header>
+
+        <div className="relative mx-auto mt-10 aspect-[16/10] max-w-[84rem] overflow-hidden bg-grey-light-bg px-4 sm:px-8 lg:px-12">
+          <div className="relative mx-auto h-full max-w-[68rem] overflow-hidden">
+            <Image
+              src={article.image.src}
+              alt={article.image.alt}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
           </div>
         </div>
 
-        <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-          <div className="prose prose-neutral max-w-none">
-            {article.body.map((paragraph) => (
-              <p key={paragraph.slice(0, 24)} className="mb-6 text-lg leading-relaxed text-foreground/90">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+        <div className="mx-auto max-w-[46rem] px-4 py-12 sm:px-8">
+          {article.body.map((paragraph) => (
+            <p
+              key={paragraph.slice(0, 32)}
+              className="mb-6 font-serif text-[1.125rem] leading-[1.75] text-foreground/90"
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
       </article>
 
       {related.length > 0 ? (
-        <section className="mx-auto max-w-6xl border-t border-border px-4 pt-12 sm:px-6">
-          <h2 className="font-heading text-2xl text-foreground">More in {article.section}</h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2">
+        <section className="mx-auto max-w-[84rem] border-t border-grey-light px-4 pt-12 sm:px-8 lg:px-12">
+          <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            More in {article.section}
+          </h2>
+          <div className="mt-8 grid gap-10 sm:grid-cols-2">
             {related.map((item) => (
               <ArticleCard key={item.slug} article={item} variant="compact" />
             ))}

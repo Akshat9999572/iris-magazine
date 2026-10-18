@@ -19,39 +19,13 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <Logo showTagline className="min-w-0" />
-
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                pathname === link.href && "bg-iris-muted text-iris",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="hidden md:block">
-          <Link
-            href="/#newsletter"
-            className="inline-flex h-8 items-center justify-center rounded-lg border border-iris/30 bg-background px-2.5 text-sm font-medium text-iris transition-colors hover:bg-iris-muted"
-          >
-            Newsletter
-          </Link>
-        </div>
-
+    <header className="relative border-b border-grey-light bg-background">
+      <div className="mx-auto flex max-w-[84rem] items-center justify-between px-4 py-4 sm:px-8 lg:px-12">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="shrink-0 lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
@@ -59,22 +33,53 @@ export function SiteHeader() {
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
           <span className="sr-only">Toggle menu</span>
         </Button>
+
+        <div className="hidden flex-1 lg:block" aria-hidden />
+
+        <Logo showTagline centered className="mx-auto lg:mx-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" />
+
+        <div className="flex flex-1 justify-end">
+          <Link
+            href="/#newsletter"
+            className="hidden text-sm text-foreground hover:underline sm:inline"
+          >
+            Newsletter
+          </Link>
+        </div>
       </div>
+
+      <nav
+        className="mx-auto hidden max-w-[84rem] border-t border-grey-light px-4 py-3 sm:px-8 lg:flex lg:justify-center lg:gap-8 lg:px-12"
+        aria-label="Primary"
+      >
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground",
+              pathname === link.href && "text-foreground",
+            )}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
 
       {open ? (
         <nav
           id="mobile-nav"
-          className="border-t border-border px-4 py-4 md:hidden"
+          className="border-t border-grey-light px-4 py-4 lg:hidden"
           aria-label="Mobile"
         >
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-3">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   className={cn(
-                    "block rounded-md px-3 py-2 text-base font-medium",
-                    pathname === link.href ? "bg-iris-muted text-iris" : "text-foreground",
+                    "font-mono text-sm uppercase tracking-[0.15em]",
+                    pathname === link.href ? "text-foreground" : "text-muted-foreground",
                   )}
                   onClick={() => setOpen(false)}
                 >
@@ -85,7 +90,7 @@ export function SiteHeader() {
             <li>
               <Link
                 href="/#newsletter"
-                className="block rounded-md px-3 py-2 text-base font-medium text-iris"
+                className="font-mono text-sm uppercase tracking-[0.15em] text-foreground"
                 onClick={() => setOpen(false)}
               >
                 Newsletter

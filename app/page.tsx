@@ -2,73 +2,98 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { articles, getFeaturedArticle } from "@/lib/articles";
+import { articles, getFeaturedArticle, sectionColors, sections } from "@/lib/articles";
 
 export default function Home() {
   const featured = getFeaturedArticle();
-  const rest = articles.filter((a) => a.slug !== featured.slug);
+  const leadColumn = articles.filter((a) => a.slug !== featured.slug).slice(0, 2);
+  const gridArticles = articles.filter((a) => a.slug !== featured.slug).slice(2);
 
   return (
     <main>
-      <section className="border-b border-border bg-linear-to-b from-iris-muted/80 to-background">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-16">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.25em] text-iris">Featured essay</p>
-            <Link href={`/essays/${featured.slug}`} className="mt-4 block no-underline group">
-              <h1 className="font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl lg:text-5xl group-hover:text-iris transition-colors">
+      <section className="mx-auto max-w-[84rem] px-4 pb-12 pt-10 sm:px-8 lg:px-12 lg:pb-16 lg:pt-14">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-7">
+            <Link href={`/essays/${featured.slug}`} className="group block no-underline hover:opacity-95">
+              <h1 className="font-serif text-[2.35rem] font-semibold leading-none font-synthesis-auto text-foreground sm:text-5xl lg:text-7xl">
                 {featured.title}
               </h1>
             </Link>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{featured.dek}</p>
-            <p className="mt-6 text-sm font-medium text-foreground">
-              {featured.author}{" "}
-              <span className="font-normal text-muted-foreground">· {featured.readMinutes} min read</span>
+            <p className="mt-6 max-w-2xl font-serif text-xl leading-snug text-foreground/85 sm:text-2xl">
+              {featured.dek}
             </p>
+            <p className="mt-5 text-base text-muted-foreground">{featured.author}</p>
+          </div>
+          <div className="lg:col-span-5">
             <Link
               href={`/essays/${featured.slug}`}
-              className="mt-6 inline-flex text-sm font-semibold text-iris hover:underline"
+              className="relative block aspect-[4/5] overflow-hidden bg-grey-light-bg sm:aspect-square lg:aspect-[4/5]"
             >
-              Read essay →
+              <Image
+                src={featured.image.src}
+                alt={featured.image.alt}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
             </Link>
           </div>
-          <Link
-            href={`/essays/${featured.slug}`}
-            className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-muted shadow-lg ring-1 ring-border"
-          >
-            <Image
-              src={featured.image.src}
-              alt={featured.image.alt}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="font-heading text-3xl text-foreground">Latest</h2>
-            <p className="mt-1 text-muted-foreground">New and noteworthy from across Iris.</p>
+      <section className="border-t border-grey-light">
+        <div className="mx-auto grid max-w-[84rem] gap-10 px-4 py-12 sm:px-8 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:py-14">
+          <div className="space-y-10 lg:col-span-4">
+            {leadColumn.map((article) => (
+              <ArticleCard key={article.slug} article={article} variant="lead" />
+            ))}
           </div>
-          <Link href="/ideas" className="text-sm font-semibold text-iris hover:underline">
-            Browse Ideas →
-          </Link>
-        </div>
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((article) => (
-            <ArticleCard key={article.slug} article={article} />
-          ))}
+
+          <div className="lg:col-span-4">
+            <div className="mb-8 border-b border-grey-light pb-6">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">Sections</p>
+              <ul className="mt-4 space-y-2">
+                {sections.map((section) => (
+                  <li key={section.id}>
+                    <Link
+                      href={`/${section.id}`}
+                      style={{ color: sectionColors[section.id] }}
+                      className="font-sans text-2xl font-semibold leading-[1.3] hover:underline md:text-[2rem]"
+                    >
+                      {section.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="space-y-8">
+              {gridArticles.slice(0, 2).map((article) => (
+                <ArticleCard key={article.slug} article={article} variant="compact" />
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-10 lg:col-span-4">
+            {gridArticles.slice(2).map((article) => (
+              <ArticleCard key={article.slug} article={article} variant="lead" />
+            ))}
+          </div>
         </div>
       </section>
 
-      <section
-        id="newsletter"
-        className="border-t border-border bg-muted/30 py-14 scroll-mt-24"
-      >
-        <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
+      <section className="border-t border-grey-light bg-grey-light-bg/60">
+        <div className="mx-auto max-w-[84rem] px-4 py-12 sm:px-8 lg:px-12 lg:py-16">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
+            {articles.slice(0, 3).map((article) => (
+              <ArticleCard key={`bottom-${article.slug}`} article={article} variant="standard" />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="newsletter" className="scroll-mt-28 border-t border-grey-light py-14 lg:py-16">
+        <div className="mx-auto flex max-w-[84rem] justify-center px-4 sm:px-8 lg:px-12">
           <NewsletterForm />
         </div>
       </section>

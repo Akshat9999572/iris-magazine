@@ -1,5 +1,12 @@
 export type Section = "ideas" | "culture" | "nature" | "science";
 
+export const sectionColors: Record<Section, string> = {
+  ideas: "#0c776d",
+  culture: "#c16e15",
+  nature: "#035a6d",
+  science: "#940b52",
+};
+
 export type Article = {
   slug: string;
   section: Section;

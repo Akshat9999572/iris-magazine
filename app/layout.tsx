@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
-import { DM_Sans, Instrument_Serif } from "next/font/google";
+import { IBM_Plex_Mono, Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const sourceSans = Source_Sans_3({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-heading",
+const sourceSerif = Source_Serif_4({
+  variable: "--font-serif",
   subsets: ["latin"],
-  weight: "400",
+});
+
+const ibmMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -37,9 +42,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${sourceSerif.variable} ${ibmMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col bg-background font-sans text-foreground">
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />

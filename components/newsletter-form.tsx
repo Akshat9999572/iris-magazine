@@ -19,10 +19,10 @@ export function NewsletterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-md text-left">
-      <p className="font-heading text-xl font-semibold">Sign up to our newsletter</p>
-      <p className="mt-2 text-sm text-muted-foreground">Updates on everything new at Iris.</p>
-      <div className="mt-4 space-y-3">
+    <form onSubmit={onSubmit} className="w-full max-w-2xl text-left">
+      <p className="text-xl font-bold text-foreground">Sign up to our newsletter</p>
+      <p className="mt-3 text-base text-foreground">Updates on everything new at Iris.</p>
+      <div className="mt-4 inline-block w-full space-y-3 sm:max-w-md">
         <Input
           type="email"
           name="email"
@@ -33,17 +33,21 @@ export function NewsletterForm() {
             if (status !== "idle") setStatus("idle");
           }}
           aria-invalid={status === "error"}
-          className="h-11"
+          className="h-auto min-w-60 rounded-sm border-grey-light px-3.5 py-3 text-base focus:bg-grey-light-bg"
         />
         <div className="absolute -left-[9999px] opacity-0" aria-hidden="true">
           <Input tabIndex={-1} autoComplete="off" name="website" placeholder="Website" />
         </div>
-        <Button type="submit" className="w-full bg-iris text-white hover:bg-iris/90">
+        <Button
+          type="submit"
+          variant="outline"
+          className="h-auto rounded-sm border-foreground px-5 py-2.5 text-base font-normal hover:bg-grey-light-bg"
+        >
           Subscribe
         </Button>
       </div>
       {status === "success" ? (
-        <p className="mt-3 text-sm text-iris" role="status">
+        <p className="mt-3 text-sm text-muted-foreground" role="status">
           Thanks — you&apos;re on the list. (Demo: no email is sent.)
         </p>
       ) : null}
