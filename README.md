@@ -43,6 +43,12 @@ Override before the first seed with `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_
 
 Newsletter signup on the public site is a client-side demo only; no email is sent.
 
+## Deploy on Hostinger
+
+Step-by-step hPanel instructions (GitHub Web App, env vars, SQLite notes): **[docs/DEPLOY-HOSTINGER.md](docs/DEPLOY-HOSTINGER.md)**.
+
+Copy [hostinger.env.example](hostinger.env.example) into hPanel → **Environment variables** (do not commit real secrets).
+
 ## Production notes
 
 Set `SESSION_SECRET` to at least 32 random characters. Change the admin password after first login (re-seed or update the DB). Use a persistent volume for `DATABASE_PATH` if you deploy the app.
