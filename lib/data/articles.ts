@@ -1,13 +1,12 @@
-import { and, desc, eq } from "drizzle-orm";
 import type { Article, Section } from "@/lib/articles";
-import { getDb } from "@/lib/db/client";
-import { articles as articlesTable, type DbArticle } from "@/lib/db/schema";
 import { seedDatabase } from "@/lib/db/seed";
+import { getStore } from "@/lib/db/store";
+import type { DbArticle } from "@/lib/db/types";
 
 function mapRow(row: DbArticle): Article {
   return {
     slug: row.slug,
-    section: row.section as Section,
+    section: row.section,
     title: row.title,
     dek: row.dek,
     author: row.author,
@@ -19,9 +18,9 @@ function mapRow(row: DbArticle): Article {
   };
 }
 
-async function readyDb() {
+async function readyStore() {
   await seedDatabase();
-  return getDb();
+  return getStore();
 }
 
 export type AdminArticle = Article & {
@@ -34,46 +33,34 @@ function mapAdminRow(row: DbArticle): AdminArticle {
   return {
     ...mapRow(row),
     id: row.id,
-    status: row.status as "draft" | "published",
+    status: row.status,
     updatedAt: row.updatedAt,
   };
 }
 
+function published(store: ReturnType<typeof getStore>) {
+  return store.articles
+    .filter((row) => row.status === "published")
+    .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
+}
+
 export async function listPublishedArticles(): Promise<Article[]> {
-  const db = await readyDb();
-  const rows = await db
-    .select()
-    .from(articlesTable)
-    .where(eq(articlesTable.status, "published"))
-    .orderBy(desc(articlesTable.publishedAt));
-  return rows.map(mapRow);
+  const store = await readyStore();
+  return published(store).map(mapRow);
 }
 
 export async function getPublishedArticle(slug: string): Promise<Article | undefined> {
-  const db = await readyDb();
-  const rows = await db
-    .select()
-    .from(articlesTable)
-    .where(and(eq(articlesTable.slug, slug), eq(articlesTable.status, "published")))
-    .limit(1);
-  return rows[0] ? mapRow(rows[0]) : undefined;
+  const store = await readyStore();
+  const row = published(store).find((article) => article.slug === slug);
+  return row ? mapRow(row) : undefined;
 }
 
 export async function getFeaturedArticle(): Promise<Article | undefined> {
-  const db = await readyDb();
-  const featured = await db
-    .select()
-    .from(articlesTable)
-    .where(and(eq(articlesTable.status, "published"), eq(articlesTable.featured, true)))
-    .limit(1);
-  if (featured[0]) return mapRow(featured[0]);
-  const fallback = await db
-    .select()
-    .from(articlesTable)
-    .where(eq(articlesTable.status, "published"))
-    .orderBy(desc(articlesTable.publishedAt))
-    .limit(1);
-  return fallback[0] ? mapRow(fallback[0]) : undefined;
+  const store = await readyStore();
+  const featured = published(store).find((article) => article.featured);
+  if (featured) return mapRow(featured);
+  const fallback = published(store)[0];
+  return fallback ? mapRow(fallback) : undefined;
 }
 
 export async function getArticlesBySection(section: Section): Promise<Article[]> {
@@ -82,28 +69,25 @@ export async function getArticlesBySection(section: Section): Promise<Article[]>
 }
 
 export async function listAllArticlesAdmin(): Promise<AdminArticle[]> {
-  const db = await readyDb();
-  const rows = await db.select().from(articlesTable).orderBy(desc(articlesTable.updatedAt));
-  return rows.map(mapAdminRow);
+  const store = await readyStore();
+  return [...store.articles]
+    .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
+    .map(mapAdminRow);
 }
 
 export async function getArticleByIdAdmin(id: number): Promise<AdminArticle | undefined> {
-  const db = await readyDb();
-  const rows = await db.select().from(articlesTable).where(eq(articlesTable.id, id)).limit(1);
-  return rows[0] ? mapAdminRow(rows[0]) : undefined;
+  const store = await readyStore();
+  const row = store.articles.find((article) => article.id === id);
+  return row ? mapAdminRow(row) : undefined;
 }
 
 export async function getArticleBySlugAdmin(slug: string): Promise<AdminArticle | undefined> {
-  const db = await readyDb();
-  const rows = await db.select().from(articlesTable).where(eq(articlesTable.slug, slug)).limit(1);
-  return rows[0] ? mapAdminRow(rows[0]) : undefined;
+  const store = await readyStore();
+  const row = store.articles.find((article) => article.slug === slug);
+  return row ? mapAdminRow(row) : undefined;
 }
 
 export async function listPublishedSlugs(): Promise<string[]> {
-  const db = await readyDb();
-  const rows = await db
-    .select({ slug: articlesTable.slug })
-    .from(articlesTable)
-    .where(eq(articlesTable.status, "published"));
-  return rows.map((r) => r.slug);
+  const store = await readyStore();
+  return published(store).map((article) => article.slug);
 }

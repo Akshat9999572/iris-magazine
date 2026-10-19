@@ -20,9 +20,10 @@
 # production
 /build
 
-# local database
+# local database / CMS store
 /data/*.sqlite
 /data/*.sqlite-*
+/data/*.json
 
 # misc
 .DS_Store

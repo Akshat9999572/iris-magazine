@@ -2,7 +2,7 @@
 
 **Iris** is a demo long-form magazine site (tagline: *ideas in bloom*), with a small editorial CMS backend similar to what a publication like Aeon would run internally.
 
-Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, SQLite (`better-sqlite3` + Drizzle-style schema).
+Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, JSON-file CMS (no native SQLite).
 
 ## Run locally
 
@@ -41,7 +41,7 @@ Override before the first seed with `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_
 - `app/api/` — auth + admin JSON API
 - `lib/db/` — SQLite client, schema, seed
 - `lib/data/` — article queries and mutations
-- `data/iris.sqlite` — local database (gitignored)
+- `data/iris.json` — local CMS store (gitignored)
 
 Newsletter signup on the public site is a client-side demo only; no email is sent.
 

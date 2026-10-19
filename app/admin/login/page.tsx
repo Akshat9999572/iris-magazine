@@ -7,8 +7,6 @@ export const metadata = {
   title: "Admin sign in",
 };
 
-export const instant = false;
-
 export default async function AdminLoginPage() {
   const session = await getAdminSession();
   if (session.isLoggedIn) {

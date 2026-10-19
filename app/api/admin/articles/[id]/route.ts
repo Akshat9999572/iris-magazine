@@ -82,6 +82,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     revalidatePath("/culture");
     revalidatePath("/nature");
     revalidatePath("/science");
+    if (!updated) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     revalidatePath(`/essays/${existing.slug}`);
     if (updated.slug !== existing.slug) {
       revalidatePath(`/essays/${updated.slug}`);

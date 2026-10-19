@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { getAdminSession } from "@/lib/auth/session";
 
-export const instant = false;
-
 export default async function AdminProtectedLayout({ children }: LayoutProps<"/admin">) {
   const session = await getAdminSession();
   if (!session.isLoggedIn) {

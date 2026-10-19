@@ -1,6 +1,6 @@
 # Deploy Iris on Hostinger
 
-Iris is a **Next.js 16** app with **SQLite** (`better-sqlite3`) and an admin CMS. Hostinger’s managed **Node.js Web App** flow is the simplest path (Business or Cloud plan with Web Apps).
+Iris is a **Next.js 16** app with a JSON-file CMS (no native add-ons) and an admin login. Hostinger’s managed **Node.js Web App** flow is the simplest path (Business or Cloud plan with Web Apps).
 
 Official references:
 
@@ -64,7 +64,7 @@ Optional:
 - `next.config.ts` exports a **plain object** (required by Hostinger’s standalone merge).
 - `output: "standalone"` is set for VPS/manual deploys; Hostinger also enforces standalone for `next` apps.
 - **No `prebuild` seed** — do not add `npm run db:seed` before `next build`. Seeding runs automatically on first app request when the DB is empty (`lib/db/seed.ts`).
-- Dependencies (`better-sqlite3@11`, `iron-session@8`, `clsx`/`tailwind-merge`) support Hostinger’s Node 20.20.2. There is no `engines` reject and no `engine-strict`.
+- No native modules (`better-sqlite3` removed). CMS data is `data/iris.json`. TypeScript and Tailwind live in `dependencies` so `NODE_ENV=production` installs still build.
 
 ## VPS (manual)
 
@@ -92,8 +92,9 @@ Use **PM2** + **Nginx** reverse proxy + HTTPS (see Hostinger’s Node VPS tutori
 
 | Symptom | Fix |
 |--------|-----|
-| `EBADENGINE` on Node 20 | Pull latest `main` — engines/engine-strict were removed. |
+| `EBADENGINE` / `node-gyp` / `better-sqlite3` | Pull latest `main` — native SQLite is gone. |
 | Old log mentions `prebuild` / `db:seed` | Pull latest `main` — prebuild was removed. |
+| TypeScript not found during `next build` | Pull latest `main` — `typescript` is a production dependency. |
 | Admin login always fails | Set `SESSION_SECRET` in hPanel and redeploy; check email/password match seed env. |
 | Empty public site | Publish articles in CMS or confirm seed ran (visit `/admin` after login). |
 | “SESSION_SECRET must be set…” | Add `SESSION_SECRET` (32+ chars) in Environment variables and redeploy. |
